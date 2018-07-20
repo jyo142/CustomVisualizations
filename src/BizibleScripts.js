@@ -24,10 +24,8 @@ looker.plugins.visualizations.add({
     updateAsync: function(data, element, config, queryResponse, done) {
       // Grab the first cell of the data.
       var firstRow = data[0];
-      var firstCell = firstRow[queryResponse.fields.dimensions[0].name];
   
       // Insert the data into the page.
-      this._textElement.innerHTML = LookerCharts.Utils.htmlForCell(firstCell);
   
       // Always call done to indicate a visualization has finished rendering.
       done()
