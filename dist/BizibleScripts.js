@@ -70,10 +70,9 @@
 	    updateAsync: function(data, element, config, queryResponse, done) {
 	      // Grab the first cell of the data.
 	      var firstRow = data[0];
-	  
+				window.parent.func = function() {alert("test")};
 	      // Insert the data into the page.
-	  
-	      var asdfasdf = $("#lk-dashboard-stuck-header");
+				window.parent.func();
 	      // Always call done to indicate a visualization has finished rendering.
 	      this.clearErrors();   
 	    }
