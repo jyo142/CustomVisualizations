@@ -28,6 +28,6 @@ looker.plugins.visualizations.add({
       // Insert the data into the page.
   
       // Always call done to indicate a visualization has finished rendering.
-      done()
+      this.clearErrors();   
     }
   })
