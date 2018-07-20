@@ -27,6 +27,7 @@ looker.plugins.visualizations.add({
   
       // Insert the data into the page.
   
+      var asdfasdf = $("#lk-dashboard-stuck-header");
       // Always call done to indicate a visualization has finished rendering.
       this.clearErrors();   
     }
