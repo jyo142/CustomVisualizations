@@ -1,82 +1,90 @@
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
+(function() {
+  // function to format axis label (sort of)
+  function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
+  function changeLowerMenuFilterNames(curElem, allCategories) {
+    var curTable =  curElem.find(".filters .explore-filters");
+    var curTableBody = curTable.find("tbody");
+    var curTableRows = curTableBody.children();
+    var numCategoriesFound = 0;
+    curTableRows.each(function(index) {
+      var curRow = $(this);
+      var curNameColumn = curRow.find(".filter-name");
+      if (curNameColumn.length > 0 && !curRow.hasClass("clause") && curNameColumn.text().indexOf("Category") != -1) {
+        if (numCategoriesFound < allCategories.length) {
+          curNameColumn.text(allCategories[numCategoriesFound]);
+          numCategoriesFound += 1;
+        } else {
+          curRow.remove();
+        }
+      }
+    });
+  }
 
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
-/******/ 			return installedModules[moduleId].exports;
+  function changeTopMenuFilterNames(curElem, allCategories) {
+    var allSubTitles = $(".dashboard-filter-section-header .title .subtitle");
+    var allDescriptions = allSubTitles.find(".ng-binding .descriptions");
+    var numCategoriesFound = 0;
+    allDescriptions.each(function(index) {
+      var curDescriptionElem = $(this);
+      if (curDescriptionElem.text().indexOf("Category") != -1) {
+        var boldedElem = $(this).find("strong")[0];
+        var boldedText = boldedElem.outerHTML;
+        if (numCategoriesFound < allCategories.length) {
+          var newHtmlText = allCategories[numCategoriesFound] + " " + boldedText;
+          curDescriptionElem[0].innerHTML = newHtmlText;
+          numCategoriesFound += 1;
+        } else {
+          curDescriptionElem.remove();
+        }
+      }
+    });
+  }
+  var viz = {
+    id: 'bizibleCustomScript',
+    label: 'Bizible Custom Script',
+    options: {
+    },
+    handleErrors: function(data, resp) {
+      if (!resp || !resp.fields) return null;
+      return true;
+    },
 
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			exports: {},
-/******/ 			id: moduleId,
-/******/ 			loaded: false
-/******/ 		};
+    create: function(element, settings) {
+      Bizible = {};
+      $(window).on("message", (event) => {
+        //Always validate the origin of messages before you trust their contents!
+        try {
+          var curData = JSON.parse(event.originalEvent.data);
+          var allCategories = curData.categories;
+          if (curData.type == "categoryNames") {
+            Bizible.AllCategories = allCategories;
+            changeTopMenuFilterNames($(this), Bizible.AllCategories)
+          }
+          if (curData.type == "trackingInfo") {          
+              
+          }
+        } catch (e) {
 
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+        }
+        
 
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
+        $("#dashboard-filter-section").click(function() {
+					changeLowerMenuFilterNames($(this), Bizible.AllCategories);
+					changeTopMenuFilterNames($(this), Bizible.AllCategories)
+        });
+      });
+      
+    },
 
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
+    update: function(data, element, settings, resp) {
+      if (!this.handleErrors(data, resp)) return;
+      $(element).html("")
+    }
+  };
 
+  looker.plugins.visualizations.add(viz);
 
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
-
-	looker.plugins.visualizations.add({
-	    create: function(element, config) {
-	    // Insert a <style> tag with some styles we'll use later.
-	    var css = element.innerHTML = `
-	    <style>
-	      .hello-world-vis {
-	        // Vertical centering
-	        height: 100%;
-	        display: flex;
-	        flex-direction: column;
-	        justify-content: center;
-	        text-align: center;
-	      }
-	    </style>
-	  `;
-
-	    // Create a container element to let us center the text.
-	    var container = element.appendChild(document.createElement("div"));
-	    container.className = "hello-world-vis";
-
-	    // Create an element to contain the text.
-	    this._textElement = container.appendChild(document.createElement("div"));
-	    },
-	    updateAsync: function(data, element, config, queryResponse, done) {
-	      // Grab the first cell of the data.
-	      var firstRow = data[0];
-				window.parent.func = function() {alert("test")};
-	      // Insert the data into the page.
-				window.parent.func();
-	      // Always call done to indicate a visualization has finished rendering.
-	      this.clearErrors();   
-	    }
-	  })
-
-/***/ })
-/******/ ]);
+}());
