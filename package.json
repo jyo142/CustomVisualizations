@@ -4,7 +4,7 @@
   "description": "",
   "main": "HelloWorld.js",
   "dependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-html": "^0.4.7",
     "gulp-webpack": "^1.5.0",
     "jquery": "^3.3.1",
